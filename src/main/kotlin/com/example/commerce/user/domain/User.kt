@@ -15,11 +15,11 @@ class User ( // internal = 같은 모듈 내에서 접근 가능
     @Column(name = "password", nullable = false)
     val password: String,
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false)
-    val role: Role
-): BaseEntity(){
+    val role: Role,
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id : Long = 0
-}
+): BaseEntity()
