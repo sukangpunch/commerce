@@ -2,7 +2,6 @@ package com.example.commerce.common.exception
 
 import com.example.commerce.common.exception.ErrorCode.*
 import com.example.commerce.common.response.ErrorResponse
-import com.sun.media.sound.InvalidFormatException
 import org.slf4j.LoggerFactory
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.http.HttpStatus.BAD_REQUEST
@@ -24,15 +23,6 @@ class CustomExceptionHandler {
         return ResponseEntity
             .status(ex.code)
             .body(ErrorResponse(ex))
-    }
-
-    @ExceptionHandler(InvalidFormatException::class)
-    fun handleInvalidFormatException(ex: InvalidFormatException): ResponseEntity<ErrorResponse> {
-        val errorMessage = "${ex.message} 은(는) 유효하지 않은 값입니다."
-        log.error("JSON 파싱 예외 발생 : {}", errorMessage)
-        return ResponseEntity
-            .status(BAD_REQUEST)
-            .body(ErrorResponse(JSON_PARSING_FAILED, errorMessage))
     }
 
     @ExceptionHandler(MethodArgumentNotValidException::class)
