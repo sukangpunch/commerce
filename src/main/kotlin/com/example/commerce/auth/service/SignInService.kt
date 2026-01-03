@@ -14,7 +14,7 @@ class SignInService(
 ) {
     fun signIn(email : String, password : String): SignInResponse {
         val user = userRepository.findByEmail(email)
-            ?: throw CustomException(USER_NOT_FOUND);
+            .orElseThrow { CustomException(USER_NOT_FOUND) }
 
         if (user.password != password) {
             throw CustomException(PASSWORD_MISMATCH)

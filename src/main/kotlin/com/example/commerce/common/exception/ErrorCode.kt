@@ -8,9 +8,17 @@ enum class ErrorCode(
 ) {
     // NOT FOUND
     USER_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "사용자를 찾을 수 없습니다"),
+    PRODUCT_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "상품이 존재하지 않습니다"),
 
     // User
     PASSWORD_MISMATCH(HttpStatus.BAD_REQUEST.value(), "비밀번호가 일치하지 않습니다."),
+
+    // Product
+    INVALID_PRODUCT_NAME(HttpStatus.BAD_REQUEST.value(), "유효하지 않은 상품 이름입니다"),
+    INVALID_PRODUCT_PRICE(HttpStatus.BAD_REQUEST.value(), "유효하지 않은 상품 가격입니다."),
+    INVALID_PRODUCT_STOCK_QUANTITY(HttpStatus.BAD_REQUEST.value(), "유효하지 않은 상품 재고 수량입니다."),
+    INVALID_PRODUCT_DESCRIPTION(HttpStatus.BAD_REQUEST.value(), "유효하지 않은 상품 설명입니다."),
+    INVALID_PRODUCT_SHORT_DESCRIPTION(HttpStatus.BAD_REQUEST.value(), "유효하지 않은 요약 설명입니다."),
 
     // Database
     DATA_INTEGRITY_VIOLATION(HttpStatus.CONFLICT.value(), "데이터베이스 무결성 제약조건 위반이 발생했습니다."),
