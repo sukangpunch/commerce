@@ -19,6 +19,7 @@ enum class ErrorCode(
     INVALID_PRODUCT_STOCK_QUANTITY(HttpStatus.BAD_REQUEST.value(), "유효하지 않은 상품 재고 수량입니다."),
     INVALID_PRODUCT_DESCRIPTION(HttpStatus.BAD_REQUEST.value(), "유효하지 않은 상품 설명입니다."),
     INVALID_PRODUCT_SHORT_DESCRIPTION(HttpStatus.BAD_REQUEST.value(), "유효하지 않은 요약 설명입니다."),
+    INVALID_CATEGORY_NAME(HttpStatus.BAD_REQUEST.value(), "유효하지 않는 카테고리 이름입니다"),
 
     // Database
     DATA_INTEGRITY_VIOLATION(HttpStatus.CONFLICT.value(), "데이터베이스 무결성 제약조건 위반이 발생했습니다."),
