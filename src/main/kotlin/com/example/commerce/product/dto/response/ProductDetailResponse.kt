@@ -9,5 +9,6 @@ data class ProductDetailResponse(
     val description: String,
     val shortDescription: String,
     val stockQuantity: Int,
-    val imageUrl: String
+    val imageUrl: String,
+    val categories: Set<Long>
 )
