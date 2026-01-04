@@ -47,8 +47,7 @@ class ProductService(
             product.description,
             product.shortDescription,
             product.stockQuantity,
-            product.imageUrl,
-            categoryIds
+            product.imageUrl
         )
     }
 
@@ -81,8 +80,6 @@ class ProductService(
             }
         }
 
-        val currentCategoryIds = getCurrentCategoryIds(product.id!!)
-
         return ProductDetailResponse(
             product.id!!,
             product.name,
@@ -90,8 +87,7 @@ class ProductService(
             product.description,
             product.shortDescription,
             product.stockQuantity,
-            product.imageUrl,
-            currentCategoryIds
+            product.imageUrl
         )
     }
 
@@ -118,22 +114,10 @@ class ProductService(
         productCategoryRepository.saveAll(productCategories)
     }
 
-    private fun getCurrentCategoryIds(productId: Long): Set<Long> {
-        return productCategoryRepository.findByProductId(productId)
-            .map { it.categoryId }
-            .toSet()
-    }
-
     @Transactional(readOnly = true)
     fun getProductDetail(id: Long): ProductDetailResponse {
         val product = productRepository.findById(id)
             .orElseThrow { CustomException(PRODUCT_NOT_FOUND) }
-
-        val productCategories = productCategoryRepository.findByProductId(id)
-        if (productCategories.isEmpty()) {
-            throw CustomException(PRODUCT_CATEGORY_NOT_MATCHING)
-        }
-        val categoryIds = productCategories.map { it.categoryId }.toSet()
 
         return ProductDetailResponse(
             product.id!!,
@@ -142,8 +126,7 @@ class ProductService(
             product.description,
             product.shortDescription,
             product.stockQuantity,
-            product.imageUrl,
-            categoryIds
+            product.imageUrl
         )
     }
 }

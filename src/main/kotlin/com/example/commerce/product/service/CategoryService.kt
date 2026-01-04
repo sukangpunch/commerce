@@ -1,19 +1,22 @@
 package com.example.commerce.product.service
 
 import com.example.commerce.common.exception.CustomException
-import com.example.commerce.common.exception.ErrorCode.CATEGORY_NAME_DUPLICATED
-import com.example.commerce.common.exception.ErrorCode.CATEGORY_NOT_FOUND
+import com.example.commerce.common.exception.ErrorCode
+import com.example.commerce.common.exception.ErrorCode.*
 import com.example.commerce.product.domain.Category
 import com.example.commerce.product.dto.request.CategoryCreateRequest
-import com.example.commerce.product.dto.request.CategoryIdsRequest
 import com.example.commerce.product.dto.response.CategoryResponse
 import com.example.commerce.product.repository.CategoryRepository
+import com.example.commerce.product.repository.ProductCategoryRepository
+import com.example.commerce.product.repository.ProductRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
 class CategoryService(
-    private val categoryRepository: CategoryRepository
+    private val categoryRepository: CategoryRepository,
+    private val productRepository: ProductRepository,
+    private val productCategoryRepository: ProductCategoryRepository
 ) {
     @Transactional
     fun addCategory(request: CategoryCreateRequest) : CategoryResponse {
@@ -39,21 +42,16 @@ class CategoryService(
     }
 
     @Transactional(readOnly = true)
-    fun findCategoriesByProduct(request: CategoryIdsRequest): List<CategoryResponse> {
-        val categoryIds = request.categoryIds
-        validateCategoryIds(categoryIds)
+    fun findCategoriesByProduct(productId : Long): List<CategoryResponse> {
+        val product = productRepository.findById(productId)
+            .orElseThrow{ CustomException(PRODUCT_NOT_FOUND) }
 
+        val productCategories = productCategoryRepository.findByProductId(product.id!!)
+        val categoryIds = productCategories.map { it.categoryId }.toSet()
         val categories = categoryRepository.findByIdIn(categoryIds)
 
         return categories.map {category ->
             CategoryResponse(category.id!!, category.name)
         }.toList()
-    }
-
-    private fun validateCategoryIds(categoryIds: Set<Long>) {
-        val categoryCount = categoryRepository.countByIdIn(categoryIds)
-        if (categoryIds.size != categoryCount) {
-            throw CustomException(CATEGORY_NOT_FOUND)
-        }
     }
 }

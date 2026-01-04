@@ -1,7 +1,6 @@
 package com.example.commerce.product.controller
 
 import com.example.commerce.product.dto.request.CategoryCreateRequest
-import com.example.commerce.product.dto.request.CategoryIdsRequest
 import com.example.commerce.product.dto.response.CategoryResponse
 import com.example.commerce.product.service.CategoryService
 import org.springframework.http.HttpStatus
@@ -27,9 +26,9 @@ class CategoryController(
         return ResponseEntity.status(status).body(response)
     }
 
-    @GetMapping
-    fun getCategoriesByProduct(@RequestBody request: CategoryIdsRequest): ResponseEntity<List<CategoryResponse>> {
-        val response = categoryService.findCategoriesByProduct(request)
+    @GetMapping("{product-id}")
+    fun getCategoriesByProduct(@PathVariable("product-id") productId: Long): ResponseEntity<List<CategoryResponse>> {
+        val response = categoryService.findCategoriesByProduct(productId)
         val status = HttpStatus.OK
         return ResponseEntity.status(status).body(response)
     }
