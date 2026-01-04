@@ -1,30 +1,44 @@
 package com.example.commerce.product.service
 
 import com.example.commerce.common.exception.CustomException
-import com.example.commerce.common.exception.ErrorCode.PRODUCT_NOT_FOUND
+import com.example.commerce.common.exception.ErrorCode.*
 import com.example.commerce.product.domain.Product
+import com.example.commerce.product.domain.ProductCategory
+import com.example.commerce.product.dto.request.ProductCreateRequest
+import com.example.commerce.product.dto.request.ProductUpdateRequest
 import com.example.commerce.product.dto.response.ProductDetailResponse
+import com.example.commerce.product.repository.CategoryRepository
+import com.example.commerce.product.repository.ProductCategoryRepository
 import com.example.commerce.product.repository.ProductRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.math.BigDecimal
 
 @Service
 class ProductService(
-    private val productRepository: ProductRepository
+    private val productRepository: ProductRepository,
+    private val categoryRepository: CategoryRepository,
+    private val productCategoryRepository: ProductCategoryRepository
 ) {
+    companion object {
+        private const val DEFAULT_IMAGE_URL = "http://test-image.jpg"
+    }
 
     @Transactional
-    fun createProduct(
-        name : String,
-        price : BigDecimal,
-        description : String,
-        shortDescription : String,
-        stockQuantity : Int
-    ): ProductDetailResponse {
-        val imageUrl = "http://test-image.png"
-        val product = Product(name, price, description, imageUrl, shortDescription, stockQuantity)
+    fun createProduct(request: ProductCreateRequest): ProductDetailResponse {
+        val categoryIds = request.categoryIds // 카테고리에 문제가 있으면 바로 예외
+        validateCategoryIds(categoryIds)
+
+        val product = Product(
+            request.name,
+            request.price,
+            request.description,
+            DEFAULT_IMAGE_URL,
+            request.shortDescription,
+            request.stockQuantity
+        )
         productRepository.save(product)
+
+        mappingCategoriesToProduct(product.id!!, categoryIds) // 카테고리 검증 이후이므로 안전하게 매핑
 
         return ProductDetailResponse(
             product.id!!,
@@ -37,41 +51,73 @@ class ProductService(
         )
     }
 
-    @Transactional(readOnly = true)
-    fun getProductDetail(id: Long): ProductDetailResponse {
-        val product = productRepository.findById(id)
-            .orElseThrow{ CustomException(PRODUCT_NOT_FOUND) }
+    private fun validateCategoryIds(categoryIds: Set<Long>) {
+        if (categoryIds.isEmpty()) {
+            throw CustomException(CATEGORY_REQUIRED)
+        }
 
-        return ProductDetailResponse(
-            product.id!!,
-            product.name,
-            product.price,
-            product.description,
-            product.shortDescription,
-            product.stockQuantity,
-            product.imageUrl
-        )
+        validateCategoryIdsAndCategories(categoryIds)
     }
 
     @Transactional
     fun updateProduct(
         id: Long,
-        name: String?,
-        price: BigDecimal?,
-        description: String?,
-        shortDescription: String?,
-        stockQuantity: Int?
+        request: ProductUpdateRequest
     ): ProductDetailResponse {
         val product = productRepository.findById(id)
-            .orElseThrow{ CustomException(PRODUCT_NOT_FOUND) }
-
+            .orElseThrow { CustomException(PRODUCT_NOT_FOUND) }
         product.update(
-            name,
-            price,
-            description,
-            shortDescription,
-            stockQuantity
+            request.name,
+            request.price,
+            request.description,
+            request.shortDescription,
+            request.stockQuantity
         )
+
+        request.categoryIds?.let { newCategoryIds ->
+            if (newCategoryIds.isNotEmpty()) {
+                updateProductCategories(product.id!!, newCategoryIds)
+            }
+        }
+
+        return ProductDetailResponse(
+            product.id!!,
+            product.name,
+            product.price,
+            product.description,
+            product.shortDescription,
+            product.stockQuantity,
+            product.imageUrl
+        )
+    }
+
+    private fun updateProductCategories(productId: Long, newCategoryIds: Set<Long>) {
+        validateCategoryIdsAndCategories(newCategoryIds)
+
+        productCategoryRepository.deleteByProductId(productId)
+        productCategoryRepository.flush()
+        mappingCategoriesToProduct(productId, newCategoryIds)
+    }
+
+    private fun validateCategoryIdsAndCategories(newCategoryIds: Set<Long>) {
+        val categoryCount = categoryRepository.countByIdIn(newCategoryIds)
+        if (newCategoryIds.size != categoryCount) {
+            throw CustomException(CATEGORY_NOT_FOUND)
+        }
+    }
+
+    private fun mappingCategoriesToProduct(productId: Long, categoryIds: Set<Long>) {
+        val productCategories = categoryIds.map { categoryId ->
+            ProductCategory(productId, categoryId)
+        }
+
+        productCategoryRepository.saveAll(productCategories)
+    }
+
+    @Transactional(readOnly = true)
+    fun getProductDetail(id: Long): ProductDetailResponse {
+        val product = productRepository.findById(id)
+            .orElseThrow { CustomException(PRODUCT_NOT_FOUND) }
 
         return ProductDetailResponse(
             product.id!!,

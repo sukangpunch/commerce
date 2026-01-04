@@ -15,13 +15,7 @@ class ProductController(
 ) {
     @PostMapping("/create")
     fun createProduct(@RequestBody request: ProductCreateRequest) : ResponseEntity<ProductDetailResponse> {
-        val response = productService.createProduct(
-            request.name,
-            request.price,
-            request.description,
-            request.shortDescription,
-            request.stockQuantity
-        )
+        val response = productService.createProduct(request)
         val status = HttpStatus.CREATED
         return ResponseEntity.status(status).body(response)
     }
@@ -38,14 +32,7 @@ class ProductController(
         @PathVariable("product-id") id : Long,
         @RequestBody request: ProductUpdateRequest
     ): ResponseEntity<ProductDetailResponse> {
-        val response = productService.updateProduct(
-            id,
-            request.name,
-            request.price,
-            request.description,
-            request.shortDescription,
-            request.stockQuantity
-        )
+        val response = productService.updateProduct(id, request)
         val status = HttpStatus.OK
         return ResponseEntity.status(status).body(response)
     }

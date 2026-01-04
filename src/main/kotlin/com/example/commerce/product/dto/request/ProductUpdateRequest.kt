@@ -7,5 +7,6 @@ data class ProductUpdateRequest(
     val description: String?,
     val shortDescription: String?,
     val price: BigDecimal?,
-    val stockQuantity: Int?
+    val stockQuantity: Int?,
+    val categoryIds: Set<Long>?
 )

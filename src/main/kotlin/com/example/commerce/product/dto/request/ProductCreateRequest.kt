@@ -7,5 +7,6 @@ data class ProductCreateRequest(
     val price: BigDecimal,
     val description: String,
     val shortDescription: String,
-    val stockQuantity: Int
+    val stockQuantity: Int,
+    val categoryIds: Set<Long>
 )
