@@ -7,7 +7,7 @@ import jakarta.persistence.*
 
 @Entity
 @Table(
-    name = "categories",
+    name = "category",
     uniqueConstraints = [
         UniqueConstraint(
             name = "uk_category_name",

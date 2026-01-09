@@ -21,5 +21,5 @@ class User ( // internal = 같은 모듈 내에서 접근 가능
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id : Long = 0
+    val id : Long? = null,
 ): BaseEntity()
