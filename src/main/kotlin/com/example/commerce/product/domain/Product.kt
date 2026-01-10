@@ -7,7 +7,7 @@ import jakarta.persistence.*
 import java.math.BigDecimal
 
 @Entity
-@Table(name = "products")
+@Table(name = "product")
 class Product(
     @Column(name = "name", nullable = false)
     var name: String,
@@ -26,10 +26,6 @@ class Product(
 
     @Column(name = "stock_quantity", nullable = false)
     var stockQuantity: Int,
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false)
-    var status: ProductStatus = ProductStatus.ACTIVE,
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -91,13 +87,5 @@ class Product(
         if(stockQuantity < 0){
             throw CustomException(INVALID_PRODUCT_STOCK_QUANTITY)
         }
-    }
-
-    fun deactivate() {
-        this.status = ProductStatus.INACTIVE
-    }
-
-    fun activate() {
-        this.status = ProductStatus.ACTIVE
     }
 }

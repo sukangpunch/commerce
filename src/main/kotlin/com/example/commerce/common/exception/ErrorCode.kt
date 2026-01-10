@@ -10,6 +10,7 @@ enum class ErrorCode(
     USER_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "사용자를 찾을 수 없습니다"),
     PRODUCT_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "상품이 존재하지 않습니다"),
     CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "카테고리를 찾을 수 없습니다"),
+    CART_ITEM_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "카트 아이템을 찾을 수 없습니다."),
 
     // User
     PASSWORD_MISMATCH(HttpStatus.BAD_REQUEST.value(), "비밀번호가 일치하지 않습니다."),
