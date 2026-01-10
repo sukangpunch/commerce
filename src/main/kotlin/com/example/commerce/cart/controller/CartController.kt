@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*
 class CartController(
     private val cartService: CartService
 ){
-    @GetMapping("{user-id}")
+    @GetMapping("/{user-id}")
     fun getCart(@PathVariable("user-id") userId : Long): ResponseEntity<CartResponse> {
         val response = cartService.getCart(userId)
         val status = HttpStatus.OK

@@ -83,7 +83,9 @@ class CartService(
 
     @Transactional
     fun deleteCartItem(cartItemId: Long){
-        cartItemRepository.deleteById(cartItemId)
+        val cartItem = cartItemRepository.findById(cartItemId)
+            .orElseThrow{ CustomException(CART_ITEM_NOT_FOUND) }
+        cartItemRepository.delete(cartItem)
         // deleteById 는 select 쿼리 + delete 쿼리 둘 다 발생(즉 2번 쿼리 발생)
         // 추후 cartItem 조회 + 토큰에서 가져온 userId를 활용하여 cartItem 의 유효를 검증
     }
