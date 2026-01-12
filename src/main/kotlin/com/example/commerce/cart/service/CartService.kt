@@ -1,15 +1,15 @@
 package com.example.commerce.cart.service
 
+import com.example.commerce.cart.domain.Cart
 import com.example.commerce.cart.domain.CartItem
+import com.example.commerce.cart.domain.CartItemSummary
 import com.example.commerce.cart.dto.request.AddCartItemRequest
 import com.example.commerce.cart.dto.request.ModifyCartItemRequest
 import com.example.commerce.cart.dto.response.CartItemResponse
 import com.example.commerce.cart.dto.response.CartResponse
 import com.example.commerce.cart.repository.CartItemRepository
 import com.example.commerce.common.exception.CustomException
-import com.example.commerce.common.exception.ErrorCode.CART_ITEM_NOT_FOUND
-import com.example.commerce.common.exception.ErrorCode.USER_NOT_FOUND
-import com.example.commerce.common.exception.ErrorCode.PRODUCT_NOT_FOUND
+import com.example.commerce.common.exception.ErrorCode.*
 import com.example.commerce.product.domain.Product
 import com.example.commerce.product.repository.ProductRepository
 import com.example.commerce.user.domain.User
@@ -44,6 +44,28 @@ class CartService(
                         description = product.description,
                         shortDescription = product.shortDescription,
                         price = product.price,
+                        quantity = cartItem.quantity
+                    )
+                }
+        )
+    }
+
+    @Transactional(readOnly = true)
+    fun getCartSummary(userId: Long): Cart {
+        val user: User =  userRepository.findById(userId)
+            .orElseThrow{ CustomException(USER_NOT_FOUND) }
+        val items = cartItemRepository.findByUserId(user.id!!)
+        val productMap = productRepository.findAllById(items.map { it.product.id })
+            .associateBy{ it.id }
+
+        return Cart(
+            userId = user.id!!,
+            items = items.filter{ productMap.containsKey(it.product.id) } // 상품이 존재하는 장바구니 아이템만 선택(productMap 에 없는 상품 제외)
+                .map{ cartItem ->
+                    val product = productMap[cartItem.product.id]!!
+                    CartItemSummary(
+                        id = cartItem.id!!,
+                        productId = product.id!!,
                         quantity = cartItem.quantity
                     )
                 }
