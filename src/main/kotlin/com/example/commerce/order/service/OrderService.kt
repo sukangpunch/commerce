@@ -26,6 +26,8 @@ class OrderService(
         val user = userRepository.findById(userId)
             .orElseThrow{ CustomException(USER_NOT_FOUND) }
 
+        if(newOrder.items.isEmpty()) throw CustomException(ORDER_PRODUCT_NOT_FOUND)
+
         val orderProductIds = newOrder.items.map { it.productId }.toSet()
         val productMap = productRepository.findByIdIn(orderProductIds).associateBy { it.id } // product의 id값을 key로 map을 만든다
         if (productMap.isEmpty()) throw CustomException(PRODUCT_NOT_FOUND)
@@ -91,6 +93,10 @@ class OrderService(
 
         val order = orderRepository.findByKeyAndState(orderKey, orderState)
             .orElseThrow{ CustomException(ORDER_NOT_FOUND)}
+
+        if(user.id != order.user.id){
+            throw CustomException(O)
+        }
 
         val orderItems = orderItemRepository.findByOrderId(order.id!!)
         if(orderItems.isEmpty()) throw CustomException(ORDER_PRODUCT_NOT_FOUND)

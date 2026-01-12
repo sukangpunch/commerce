@@ -1,6 +1,5 @@
 package com.example.commerce.common.exception
 
-import org.apache.tomcat.util.http.parser.HttpParser
 import org.springframework.http.HttpStatus
 
 enum class ErrorCode(
@@ -31,6 +30,8 @@ enum class ErrorCode(
     // Order
     ORDER_PRODUCT_QUANTITY_INVALID(HttpStatus.BAD_REQUEST.value(), "주문 시 상품 수량은 최소 1개 이상이여야 합니다."),
     PRODUCT_MISMATCH_IN_ORDER(HttpStatus.BAD_REQUEST.value(), "주문의 상품과 조회한 상품이 매칭되지 않습니다."),
+    ORDER_USER_NOT_MATCHING(HttpStatus.BAD_REQUEST.value(), "주문을 조회할 권한이 존재하지 않습니다."),
+
     // Database
     DATA_INTEGRITY_VIOLATION(HttpStatus.CONFLICT.value(), "데이터베이스 무결성 제약조건 위반이 발생했습니다."),
 
