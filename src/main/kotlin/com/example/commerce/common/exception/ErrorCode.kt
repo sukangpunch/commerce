@@ -28,7 +28,7 @@ enum class ErrorCode(
     CATEGORY_NAME_DUPLICATED(HttpStatus.BAD_REQUEST.value(), "이미 존재하는 카테고리 이름입니다"),
 
     // Order
-    ORDER_PRODUCT_QUANTITY_INVALID(HttpStatus.BAD_REQUEST.value(), "주문 시 상품 수량은 최소 1개 이상이여야 합니다."),
+    ORDER_PRODUCT_QUANTITY_INVALID(HttpStatus.BAD_REQUEST.value(), "주문 시 상품 수량은 최소 1개 이상이어야 합니다."),
     PRODUCT_MISMATCH_IN_ORDER(HttpStatus.BAD_REQUEST.value(), "주문의 상품과 조회한 상품이 매칭되지 않습니다."),
     ORDER_USER_NOT_MATCHING(HttpStatus.BAD_REQUEST.value(), "주문을 조회할 권한이 존재하지 않습니다."),
 
