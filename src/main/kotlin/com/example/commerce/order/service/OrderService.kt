@@ -95,7 +95,7 @@ class OrderService(
             .orElseThrow{ CustomException(ORDER_NOT_FOUND)}
 
         if(user.id != order.user.id){
-            throw CustomException(O)
+            throw CustomException(ORDER_USER_NOT_MATCHING)
         }
 
         val orderItems = orderItemRepository.findByOrderId(order.id!!)
