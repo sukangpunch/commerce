@@ -12,7 +12,8 @@ class SignInService(
     private val userRepository: UserRepository,
     private val tokenProvider: TokenProvider
 ) {
-    fun signIn(email : String, password : String): SignInResponse {
+
+    fun signIn(email: String, password: String): SignInResponse {
         val user = userRepository.findByEmail(email)
             .orElseThrow { CustomException(USER_NOT_FOUND) }
 

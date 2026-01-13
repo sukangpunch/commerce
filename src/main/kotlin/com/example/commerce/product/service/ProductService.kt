@@ -1,7 +1,9 @@
 package com.example.commerce.product.service
 
 import com.example.commerce.common.exception.CustomException
-import com.example.commerce.common.exception.ErrorCode.*
+import com.example.commerce.common.exception.ErrorCode.CATEGORY_NOT_FOUND
+import com.example.commerce.common.exception.ErrorCode.CATEGORY_REQUIRED
+import com.example.commerce.common.exception.ErrorCode.PRODUCT_NOT_FOUND
 import com.example.commerce.product.domain.Product
 import com.example.commerce.product.domain.ProductCategory
 import com.example.commerce.product.dto.request.ProductCreateRequest
@@ -19,7 +21,9 @@ class ProductService(
     private val categoryRepository: CategoryRepository,
     private val productCategoryRepository: ProductCategoryRepository
 ) {
+
     companion object {
+
         private const val DEFAULT_IMAGE_URL = "http://test-image.jpg"
     }
 

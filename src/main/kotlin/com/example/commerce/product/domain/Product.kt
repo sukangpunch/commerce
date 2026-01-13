@@ -2,8 +2,17 @@ package com.example.commerce.product.domain
 
 import com.example.commerce.common.BaseEntity
 import com.example.commerce.common.exception.CustomException
-import com.example.commerce.common.exception.ErrorCode.*
-import jakarta.persistence.*
+import com.example.commerce.common.exception.ErrorCode.INVALID_PRODUCT_DESCRIPTION
+import com.example.commerce.common.exception.ErrorCode.INVALID_PRODUCT_NAME
+import com.example.commerce.common.exception.ErrorCode.INVALID_PRODUCT_PRICE
+import com.example.commerce.common.exception.ErrorCode.INVALID_PRODUCT_SHORT_DESCRIPTION
+import com.example.commerce.common.exception.ErrorCode.INVALID_PRODUCT_STOCK_QUANTITY
+import jakarta.persistence.Column
+import jakarta.persistence.Entity
+import jakarta.persistence.GeneratedValue
+import jakarta.persistence.GenerationType
+import jakarta.persistence.Id
+import jakarta.persistence.Table
 import java.math.BigDecimal
 
 @Entity
@@ -32,7 +41,7 @@ class Product(
     val id: Long? = null,
 ) : BaseEntity() {
 
-    init{
+    init {
         validateName(name)
         validatePrice(price)
         validateDescription(description)
@@ -46,7 +55,7 @@ class Product(
         description: String?,
         shortDescription: String?,
         stockQuantity: Int?
-    ){
+    ) {
         // name 이 null 이면 let 블록이 실행되지 않는다.
         name?.let { validateName(it); this.name = it }
 
@@ -60,31 +69,31 @@ class Product(
     }
 
     private fun validateName(name: String) {
-        if (name.isBlank()){
+        if (name.isBlank()) {
             throw CustomException(INVALID_PRODUCT_NAME)
         }
     }
 
     private fun validatePrice(price: BigDecimal) {
-        if (price <= BigDecimal.ZERO){
+        if (price <= BigDecimal.ZERO) {
             throw CustomException(INVALID_PRODUCT_PRICE)
         }
     }
 
     private fun validateDescription(description: String) {
-        if (description.isBlank()){
+        if (description.isBlank()) {
             throw CustomException(INVALID_PRODUCT_DESCRIPTION)
         }
     }
 
     private fun validateShortDescription(shortDescription: String) {
-        if (shortDescription.isBlank()){
+        if (shortDescription.isBlank()) {
             throw CustomException(INVALID_PRODUCT_SHORT_DESCRIPTION)
         }
     }
 
     private fun validateStockQuantity(stockQuantity: Int) {
-        if(stockQuantity < 0){
+        if (stockQuantity < 0) {
             throw CustomException(INVALID_PRODUCT_STOCK_QUANTITY)
         }
     }

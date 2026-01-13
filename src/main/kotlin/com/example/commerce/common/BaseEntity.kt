@@ -11,7 +11,6 @@ import java.time.ZoneOffset.UTC
 import java.time.ZonedDateTime
 import java.time.temporal.ChronoUnit.MILLIS
 
-
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener::class)
 @DynamicInsert
@@ -25,7 +24,7 @@ abstract class BaseEntity {
         protected set
 
     @PrePersist
-    fun onPrePersist(){
+    fun onPrePersist() {
         val now = ZonedDateTime.now(UTC).truncatedTo(MILLIS)
         this.updatedAt = now
         this.createdAt = now
@@ -35,5 +34,4 @@ abstract class BaseEntity {
     fun onPreUpdate() {
         this.updatedAt = ZonedDateTime.now(UTC).truncatedTo(MILLIS)
     }
-
 }

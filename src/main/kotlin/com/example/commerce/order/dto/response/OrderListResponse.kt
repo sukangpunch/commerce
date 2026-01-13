@@ -9,9 +9,11 @@ data class OrderListResponse(
     val name: String,
     val totalPrice: BigDecimal,
     val state: OrderState
-){
+) {
+
     companion object {
-        private fun of(order: OrderSummary): OrderListResponse{
+
+        private fun of(order: OrderSummary): OrderListResponse {
             return OrderListResponse(
                 key = order.key,
                 name = order.name,
@@ -20,8 +22,8 @@ data class OrderListResponse(
             )
         }
 
-        fun of(orders: List<OrderSummary>): List<OrderListResponse>{ // 리스트 변환만 외부에 노출, 내부적으로 처리
-            return orders.map{ of(it) }
+        fun of(orders: List<OrderSummary>): List<OrderListResponse> { // 리스트 변환만 외부에 노출, 내부적으로 처리
+            return orders.map { of(it) }
         }
     }
 }

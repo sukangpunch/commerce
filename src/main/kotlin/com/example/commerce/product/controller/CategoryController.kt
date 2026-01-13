@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*
 class CategoryController(
     private val categoryService: CategoryService
 ) {
+
     @PostMapping("/create")
     fun createCategory(@RequestBody request: CategoryCreateRequest): ResponseEntity<CategoryResponse> {
         val response = categoryService.addCategory(request)

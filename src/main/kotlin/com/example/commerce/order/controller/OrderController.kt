@@ -18,11 +18,12 @@ class OrderController(
     private val orderService: OrderService,
     private val cartService: CartService
 ) {
+
     @PostMapping("/create")
     fun createOrder(
         @RequestParam("userId") userId: Long,
         @RequestBody request: CreateOrderRequest
-    ): ResponseEntity<CreateOrderResponse>{
+    ): ResponseEntity<CreateOrderResponse> {
         val response = orderService.create(
             userId = userId,
             newOrder = request.toNewOrder(userId),
@@ -39,7 +40,7 @@ class OrderController(
     fun createFromCart(
         @RequestParam("userId") userId: Long,
         @RequestBody request: CreateOrderFromCartRequest
-    ): ResponseEntity<CreateOrderResponse>{
+    ): ResponseEntity<CreateOrderResponse> {
         val cart = cartService.getCartSummary(userId)
         val response = orderService.create(
             userId = userId,

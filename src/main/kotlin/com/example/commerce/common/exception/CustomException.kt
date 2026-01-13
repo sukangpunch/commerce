@@ -8,7 +8,7 @@ class CustomException(
     constructor(
         errorCode: ErrorCode,
         detail: String? = null
-    ): this(
+    ) : this(
         code = errorCode.code,
         message = detail?.let { "${errorCode.message} : $it" } ?: errorCode.message
     )

@@ -13,8 +13,9 @@ import org.springframework.web.bind.annotation.*
 class ProductController(
     private val productService: ProductService
 ) {
+
     @PostMapping("/create")
-    fun createProduct(@RequestBody request: ProductCreateRequest) : ResponseEntity<ProductDetailResponse> {
+    fun createProduct(@RequestBody request: ProductCreateRequest): ResponseEntity<ProductDetailResponse> {
         val response = productService.createProduct(request)
         val status = HttpStatus.CREATED
         return ResponseEntity.status(status).body(response)
@@ -29,7 +30,7 @@ class ProductController(
 
     @PatchMapping("/update/{product-id}")
     fun updateProductInfo(
-        @PathVariable("product-id") id : Long,
+        @PathVariable("product-id") id: Long,
         @RequestBody request: ProductUpdateRequest
     ): ResponseEntity<ProductDetailResponse> {
         val response = productService.updateProduct(id, request)

@@ -9,6 +9,7 @@ data class Cart(
     val userId: Long,
     val items: List<CartItemSummary>,
 ) {
+
     fun toNewOrder(targetItemIds: Set<Long>): NewOrder {
         if (items.isEmpty()) throw CustomException(CART_ITEM_NOT_FOUND)
         return NewOrder(
