@@ -4,7 +4,7 @@ import java.math.BigDecimal
 
 data class OrderSummary(
     val id: Long,
-    val key: String,
+    val orderKey: String,
     val name: String,
     val userId: Long,
     val totalPrice: BigDecimal,

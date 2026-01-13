@@ -4,8 +4,8 @@ import com.example.commerce.common.exception.CustomException
 import com.example.commerce.common.exception.ErrorCode.CATEGORY_NOT_FOUND
 import com.example.commerce.common.exception.ErrorCode.CATEGORY_REQUIRED
 import com.example.commerce.common.exception.ErrorCode.PRODUCT_NOT_FOUND
-import com.example.commerce.product.domain.Product
-import com.example.commerce.product.domain.ProductCategory
+import com.example.commerce.product.domain.ProductCategoryEntity
+import com.example.commerce.product.domain.ProductEntity
 import com.example.commerce.product.dto.request.ProductCreateRequest
 import com.example.commerce.product.dto.request.ProductUpdateRequest
 import com.example.commerce.product.dto.response.ProductDetailResponse
@@ -32,7 +32,7 @@ class ProductService(
         val categoryIds = request.categoryIds // 카테고리에 문제가 있으면 바로 예외
         validateCategoryIds(categoryIds)
 
-        val product = Product(
+        val product = ProductEntity(
             request.name,
             request.price,
             request.description,
@@ -51,7 +51,7 @@ class ProductService(
             product.description,
             product.shortDescription,
             product.stockQuantity,
-            product.imageUrl
+            product.thumbnailUrl
         )
     }
 
@@ -91,7 +91,7 @@ class ProductService(
             product.description,
             product.shortDescription,
             product.stockQuantity,
-            product.imageUrl
+            product.thumbnailUrl
         )
     }
 
@@ -112,7 +112,7 @@ class ProductService(
 
     private fun mappingCategoriesToProduct(productId: Long, categoryIds: Set<Long>) {
         val productCategories = categoryIds.map { categoryId ->
-            ProductCategory(productId, categoryId)
+            ProductCategoryEntity(productId, categoryId)
         }
 
         productCategoryRepository.saveAll(productCategories)
@@ -130,7 +130,7 @@ class ProductService(
             product.description,
             product.shortDescription,
             product.stockQuantity,
-            product.imageUrl
+            product.thumbnailUrl
         )
     }
 }

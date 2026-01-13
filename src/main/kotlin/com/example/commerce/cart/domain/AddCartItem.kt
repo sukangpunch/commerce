@@ -1,7 +1,7 @@
 package com.example.commerce.cart.domain
 
-data class CartItemSummary(
-    val id: Long,
+data class AddCartItem(
     val productId: Long,
     val quantity: Int
-)
+) {
+}

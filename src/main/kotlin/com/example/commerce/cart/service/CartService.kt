@@ -1,20 +1,19 @@
 package com.example.commerce.cart.service
 
+import com.example.commerce.cart.domain.AddCartItem
 import com.example.commerce.cart.domain.Cart
 import com.example.commerce.cart.domain.CartItem
-import com.example.commerce.cart.domain.CartItemSummary
-import com.example.commerce.cart.dto.request.AddCartItemRequest
-import com.example.commerce.cart.dto.request.ModifyCartItemRequest
-import com.example.commerce.cart.dto.response.CartItemResponse
-import com.example.commerce.cart.dto.response.CartResponse
+import com.example.commerce.cart.domain.CartItemEntity
+import com.example.commerce.cart.domain.ModifyCartItem
 import com.example.commerce.cart.repository.CartItemRepository
 import com.example.commerce.common.exception.CustomException
 import com.example.commerce.common.exception.ErrorCode.CART_ITEM_NOT_FOUND
 import com.example.commerce.common.exception.ErrorCode.PRODUCT_NOT_FOUND
 import com.example.commerce.common.exception.ErrorCode.USER_NOT_FOUND
 import com.example.commerce.product.domain.Product
+import com.example.commerce.product.domain.ProductEntity
 import com.example.commerce.product.repository.ProductRepository
-import com.example.commerce.user.domain.User
+import com.example.commerce.user.domain.UserEntity
 import com.example.commerce.user.repository.UserRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -27,83 +26,60 @@ class CartService(
 ) {
 
     @Transactional(readOnly = true)
-    fun getCart(userId: Long): CartResponse {
-        val user: User = userRepository.findById(userId)
+    fun getCart(userId: Long): Cart {
+        val user: UserEntity = userRepository.findById(userId)
             .orElseThrow { CustomException(USER_NOT_FOUND) }
         val items = cartItemRepository.findByUserId(user.id!!)
-        val productMap = productRepository.findAllById(items.map { it.product.id })
+        val productMap = productRepository.findAllById(items.map { it.productId })
             .associateBy { it.id } // productId 를 key 로 하고, product 객체를  value 로 하는 map 으로 리턴
-
-        return CartResponse(
-            userId = user.id!!,
-            items = items.filter { productMap.containsKey(it.product.id) } // 상품이 존재하는 장바구니 아이템만 선택(productMap 에 없는 상품 제외)
-                .map { cartItem ->
-                    val product = productMap[cartItem.product.id]!!
-                    CartItemResponse(
-                        id = cartItem.id!!,
-                        productId = product.id!!,
-                        productName = product.name,
-                        thumbnailUrl = product.imageUrl,
-                        description = product.description,
-                        shortDescription = product.shortDescription,
-                        price = product.price,
-                        quantity = cartItem.quantity
-                    )
-                }
-        )
-    }
-
-    @Transactional(readOnly = true)
-    fun getCartSummary(userId: Long): Cart {
-        val user: User = userRepository.findById(userId)
-            .orElseThrow { CustomException(USER_NOT_FOUND) }
-        val items = cartItemRepository.findByUserId(user.id!!)
-        val productMap = productRepository.findAllById(items.map { it.product.id })
-            .associateBy { it.id }
 
         return Cart(
             userId = user.id!!,
-            items = items.filter { productMap.containsKey(it.product.id) } // 상품이 존재하는 장바구니 아이템만 선택(productMap 에 없는 상품 제외)
-                .map { cartItem ->
-                    val product = productMap[cartItem.product.id]!!
-                    CartItemSummary(
-                        id = cartItem.id!!,
-                        productId = product.id!!,
-                        quantity = cartItem.quantity
+            items = items.filter { productMap.containsKey(it.productId) } // 상품이 존재하는 장바구니 아이템만 선택(productMap 에 없는 상품 제외)
+                .map {
+                    CartItem(
+                        id = it.id!!,
+                        product = Product(
+                            id = productMap[it.productId]!!.id!!,
+                            name = productMap[it.productId]!!.name,
+                            thumbnailUrl = productMap[it.productId]!!.thumbnailUrl,
+                            description = productMap[it.productId]!!.description,
+                            shortDescription = productMap[it.productId]!!.shortDescription,
+                            price = productMap[it.productId]!!.price,
+                        ),
+                        quantity = it.quantity
                     )
                 }
         )
     }
 
     @Transactional
-    fun addCartItem(userId: Long, request: AddCartItemRequest): Long {
-        val user: User = userRepository.findById(userId)
+    fun addCartItem(userId: Long, item: AddCartItem): Long {
+        val user: UserEntity = userRepository.findById(userId)
             .orElseThrow { CustomException(USER_NOT_FOUND) }
 
-        val product: Product = productRepository.findById(request.productId)
+        val product: ProductEntity = productRepository.findById(item.productId)
             .orElseThrow { CustomException(PRODUCT_NOT_FOUND) }
-
-        val quantity = request.quantity
 
         return cartItemRepository.findByUserIdAndProductId(user.id!!, product.id!!)
             ?.apply {
                 applyQuantity(quantity)
             }?.id
             ?: cartItemRepository.save(
-                CartItem(
-                    user = user,
-                    product = product,
-                    quantity = quantity
+                CartItemEntity(
+                    userId = user.id!!,
+                    productId = product.id!!,
+                    quantity = item.quantity,
                 )
             ).id!!
     }
 
     @Transactional
-    fun modifyCartItem(cartItemId: Long, request: ModifyCartItemRequest) {
-        val cartItem: CartItem = cartItemRepository.findById(cartItemId)
+    fun modifyCartItem(cartItemId: Long, item: ModifyCartItem) {
+        val cartItem: CartItemEntity = cartItemRepository.findById(cartItemId)
             .orElseThrow { CustomException(CART_ITEM_NOT_FOUND) }
 
-        cartItem.applyQuantity(request.quantity)
+        cartItem.applyQuantity(item.quantity)
     }
 
     @Transactional

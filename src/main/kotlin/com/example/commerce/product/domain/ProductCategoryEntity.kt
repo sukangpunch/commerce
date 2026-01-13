@@ -23,7 +23,7 @@ import jakarta.persistence.UniqueConstraint
         Index(name = "idx_category_id", columnList = "category_id")
     ]
 )
-class ProductCategory(
+class ProductCategoryEntity(
     @Column(name = "product_id", nullable = false)
     val productId: Long,
 
