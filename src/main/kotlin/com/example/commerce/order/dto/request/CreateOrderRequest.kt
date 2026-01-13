@@ -9,8 +9,9 @@ data class CreateOrderRequest(
     val productId: Long,
     val quantity: Int
 ) {
+
     fun toNewOrder(userId: Long): NewOrder {
-        if(quantity <= 0) throw CustomException(ORDER_PRODUCT_QUANTITY_INVALID)
+        if (quantity <= 0) throw CustomException(ORDER_PRODUCT_QUANTITY_INVALID)
         return NewOrder(
             userId = userId,
             items = listOf(NewOrderItem(productId, quantity))

@@ -13,7 +13,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice
 
 @RestControllerAdvice
 class CustomExceptionHandler {
+
     companion object {
+
         private val log = LoggerFactory.getLogger(CustomException::class.java)
     }
 

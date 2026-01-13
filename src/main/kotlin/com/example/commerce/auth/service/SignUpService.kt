@@ -13,7 +13,7 @@ class SignUpService(
 ) {
 
     @Transactional
-    fun signUp(name: String, email : String, password: String): SignUpResponse {
+    fun signUp(name: String, email: String, password: String): SignUpResponse {
         val user = User(
             name,
             email,
