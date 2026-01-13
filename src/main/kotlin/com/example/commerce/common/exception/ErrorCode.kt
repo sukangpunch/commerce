@@ -6,6 +6,7 @@ enum class ErrorCode(
     val code: Int,
     val message: String
 ) {
+
     // NOT FOUND
     USER_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "사용자를 찾을 수 없습니다"),
     PRODUCT_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "상품이 존재하지 않습니다"),
@@ -13,6 +14,7 @@ enum class ErrorCode(
     CART_ITEM_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "카트 아이템을 찾을 수 없습니다."),
     ORDER_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "주문을 찾을 수 없습니다."),
     ORDER_PRODUCT_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "주문의 상품을 찾을 수 없습니다."),
+
     // User
     PASSWORD_MISMATCH(HttpStatus.BAD_REQUEST.value(), "비밀번호가 일치하지 않습니다."),
 
@@ -27,6 +29,9 @@ enum class ErrorCode(
     PRODUCT_CATEGORY_NOT_MATCHING(HttpStatus.BAD_REQUEST.value(), "상품에 카테고리가 매핑되어 있지 않습니다."),
     CATEGORY_NAME_DUPLICATED(HttpStatus.BAD_REQUEST.value(), "이미 존재하는 카테고리 이름입니다"),
 
+    // Cart
+    ORDER_PRODUCT_CART_PRODUCT_NOT_MATCHING(HttpStatus.BAD_REQUEST.value(), "주문 상품과, 장바구니 상품이 매칭 되지 않습니다."),
+
     // Order
     ORDER_PRODUCT_QUANTITY_INVALID(HttpStatus.BAD_REQUEST.value(), "주문 시 상품 수량은 최소 1개 이상이어야 합니다."),
     PRODUCT_MISMATCH_IN_ORDER(HttpStatus.BAD_REQUEST.value(), "주문의 상품과 조회한 상품이 매칭되지 않습니다."),
@@ -40,5 +45,4 @@ enum class ErrorCode(
     INVALID_INPUT(HttpStatus.BAD_REQUEST.value(), "값을 입력할 수 없습니다."),
     NOT_DEFINED_ERROR(HttpStatus.BAD_REQUEST.value(), "에러가 발생했습니다."),
     ;
-
 }

@@ -1,9 +1,9 @@
 package com.example.commerce.product.service
 
 import com.example.commerce.common.exception.CustomException
-import com.example.commerce.common.exception.ErrorCode
-import com.example.commerce.common.exception.ErrorCode.*
-import com.example.commerce.product.domain.Category
+import com.example.commerce.common.exception.ErrorCode.CATEGORY_NAME_DUPLICATED
+import com.example.commerce.common.exception.ErrorCode.PRODUCT_NOT_FOUND
+import com.example.commerce.product.domain.CategoryEntity
 import com.example.commerce.product.dto.request.CategoryCreateRequest
 import com.example.commerce.product.dto.response.CategoryResponse
 import com.example.commerce.product.repository.CategoryRepository
@@ -18,12 +18,13 @@ class CategoryService(
     private val productRepository: ProductRepository,
     private val productCategoryRepository: ProductCategoryRepository
 ) {
+
     @Transactional
-    fun addCategory(request: CategoryCreateRequest) : CategoryResponse {
-        if(categoryRepository.existsByName(request.name)){
+    fun addCategory(request: CategoryCreateRequest): CategoryResponse {
+        if (categoryRepository.existsByName(request.name)) {
             throw CustomException(CATEGORY_NAME_DUPLICATED)
         }
-        val category = Category(request.name)
+        val category = CategoryEntity(request.name)
 
         categoryRepository.save(category)
 
@@ -42,15 +43,15 @@ class CategoryService(
     }
 
     @Transactional(readOnly = true)
-    fun findCategoriesByProduct(productId : Long): List<CategoryResponse> {
+    fun findCategoriesByProduct(productId: Long): List<CategoryResponse> {
         val product = productRepository.findById(productId)
-            .orElseThrow{ CustomException(PRODUCT_NOT_FOUND) }
+            .orElseThrow { CustomException(PRODUCT_NOT_FOUND) }
 
         val productCategories = productCategoryRepository.findByProductId(product.id!!)
         val categoryIds = productCategories.map { it.categoryId }.toSet()
         val categories = categoryRepository.findByIdIn(categoryIds)
 
-        return categories.map {category ->
+        return categories.map { category ->
             CategoryResponse(category.id!!, category.name)
         }.toList()
     }

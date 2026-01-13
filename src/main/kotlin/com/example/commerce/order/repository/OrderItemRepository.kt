@@ -1,8 +1,9 @@
 package com.example.commerce.order.repository
 
-import com.example.commerce.order.domain.OrderItem
+import com.example.commerce.order.domain.OrderItemEntity
 import org.springframework.data.jpa.repository.JpaRepository
 
-interface OrderItemRepository : JpaRepository<OrderItem, Long> {
-    fun findByOrderId(orderId: Long): List<OrderItem>
+interface OrderItemRepository : JpaRepository<OrderItemEntity, Long> {
+
+    fun findByOrderId(orderId: Long): List<OrderItemEntity>
 }

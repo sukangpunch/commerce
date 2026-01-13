@@ -13,7 +13,7 @@ data class OrderListResponse(
     companion object {
         private fun of(order: OrderSummary): OrderListResponse{
             return OrderListResponse(
-                key = order.key,
+                key = order.orderKey,
                 name = order.name,
                 totalPrice = order.totalPrice,
                 state = order.state

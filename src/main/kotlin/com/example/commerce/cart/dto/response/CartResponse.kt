@@ -17,13 +17,15 @@ data class CartItemResponse(
     val shortDescription: String,
     val price: BigDecimal,
     val quantity: Int,
-){
+) {
+
     companion object {
+
         fun of(cartItem: CartItem): CartItemResponse = CartItemResponse(
             id = cartItem.id!!,
-            productId = cartItem.product.id!!,
+            productId = cartItem.product.id,
             productName = cartItem.product.name,
-            thumbnailUrl = cartItem.product.imageUrl,
+            thumbnailUrl = cartItem.product.thumbnailUrl,
             description = cartItem.product.description,
             shortDescription = cartItem.product.shortDescription,
             price = cartItem.product.price,

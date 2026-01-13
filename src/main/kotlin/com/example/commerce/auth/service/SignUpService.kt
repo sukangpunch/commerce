@@ -2,7 +2,7 @@ package com.example.commerce.auth.service
 
 import com.example.commerce.auth.dto.response.SignUpResponse
 import com.example.commerce.user.domain.Role
-import com.example.commerce.user.domain.User
+import com.example.commerce.user.domain.UserEntity
 import com.example.commerce.user.repository.UserRepository
 import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
@@ -13,8 +13,8 @@ class SignUpService(
 ) {
 
     @Transactional
-    fun signUp(name: String, email : String, password: String): SignUpResponse {
-        val user = User(
+    fun signUp(name: String, email: String, password: String): SignUpResponse {
+        val user = UserEntity(
             name,
             email,
             password,

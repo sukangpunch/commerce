@@ -2,6 +2,7 @@ package com.example.commerce.cart.controller
 
 import com.example.commerce.cart.dto.request.AddCartItemRequest
 import com.example.commerce.cart.dto.request.ModifyCartItemRequest
+import com.example.commerce.cart.dto.response.CartItemResponse
 import com.example.commerce.cart.dto.response.CartResponse
 import com.example.commerce.cart.service.CartService
 import org.springframework.http.HttpStatus
@@ -12,12 +13,18 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("/api/v1/cart")
 class CartController(
     private val cartService: CartService
-){
+) {
+
     @GetMapping("/{user-id}")
-    fun getCart(@PathVariable("user-id") userId : Long): ResponseEntity<CartResponse> {
+    fun getCart(@PathVariable("user-id") userId: Long): ResponseEntity<CartResponse> {
         val response = cartService.getCart(userId)
         val status = HttpStatus.OK
-        return ResponseEntity.status(status).body(response)
+        return ResponseEntity.status(status).body(
+            CartResponse(
+                userId,
+                response.items.map { CartItemResponse.of(it) }
+            )
+        )
     }
 
     @PostMapping("/items/{user-id}")
@@ -25,7 +32,7 @@ class CartController(
         @PathVariable("user-id") userId: Long,
         @RequestBody request: AddCartItemRequest
     ): ResponseEntity<Void> {
-        cartService.addCartItem(userId, request)
+        cartService.addCartItem(userId, request.toAddCartItem())
         val status = HttpStatus.OK
         return ResponseEntity.status(status).build()
     }
@@ -35,7 +42,7 @@ class CartController(
         @PathVariable("cart-item-id") cartItemId: Long,
         @RequestBody request: ModifyCartItemRequest,
     ): ResponseEntity<Void> {
-        cartService.modifyCartItem(cartItemId, request)
+        cartService.modifyCartItem(cartItemId, request.toModifyCartItem(cartItemId))
         val status = HttpStatus.OK
         return ResponseEntity.status(status).build()
     }
@@ -43,7 +50,7 @@ class CartController(
     @DeleteMapping("/items/{cart-item-id}")
     fun deleteCartItem(
         @PathVariable("cart-item-id") cartItemId: Long
-    ): ResponseEntity<Void>{
+    ): ResponseEntity<Void> {
         cartService.deleteCartItem(cartItemId)
         val status = HttpStatus.OK
         return ResponseEntity.status(status).build()
