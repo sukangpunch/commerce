@@ -1,9 +1,11 @@
 package com.example.commerce.payment.controller
 
+import com.example.commerce.order.domain.OrderState
 import com.example.commerce.order.service.OrderService
 import com.example.commerce.payment.dto.request.CreatePaymentRequest
 import com.example.commerce.payment.dto.response.CreatePaymentResponse
 import com.example.commerce.payment.service.PaymentService
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -23,6 +25,9 @@ class PaymentController(
         @RequestParam("userId") userId: Long,
         @RequestBody request: CreatePaymentRequest,
     ): ResponseEntity<CreatePaymentResponse> {
-        return ResponseEntity.ok(CreatePaymentResponse(1L))
+        val order = orderService.getOrder(userId, request.orderKey, OrderState.CREATED)
+        val response = paymentService.createPayment(order)
+        val status = HttpStatus.CREATED
+        return ResponseEntity.status(status).body(CreatePaymentResponse(response))
     }
 }

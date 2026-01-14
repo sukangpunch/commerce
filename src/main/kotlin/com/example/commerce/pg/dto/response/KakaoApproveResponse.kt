@@ -1,0 +1,18 @@
+package com.example.commerce.pg.dto.response
+
+data class KakaoApproveResponse(
+    val aid: String,
+    val tid: String,
+    val cid: String,
+    val sid: String?,
+    val partner_order_id: String,
+    val partner_user_id: String,
+    val payment_method_type: String,
+    val amount: Amount,
+    val item_name: String,
+    val item_code: String?,
+    val quantity: Int,
+    val created_at: String,
+    val approved_at: String,
+    val payload: String?,
+)
