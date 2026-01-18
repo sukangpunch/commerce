@@ -42,7 +42,7 @@ class OrderService(
         if (productMap.keys != orderProductIds) throw CustomException(PRODUCT_MISMATCH_IN_ORDER)
 
         val order = OrderEntity(
-            user = user,
+            userId = user.id!!,
             orderKey = orderKeyGenerator.generate(),
             name = newOrder.items.first().let { productMap[it.productId]!!.name + if (newOrder.items.size > 1) " 외 ${newOrder.items.size - 1}개" else "" },
             totalPrice = newOrder.items.sumOf { productMap[it.productId]!!.price.multiply(it.quantity.toBigDecimal()) },
@@ -102,7 +102,7 @@ class OrderService(
         val order = orderRepository.findByOrderKeyAndState(orderKey, orderState)
             .orElseThrow { CustomException(ORDER_NOT_FOUND) }
 
-        if (user.id != order.user.id) {
+        if (user.id != order.userId) {
             throw CustomException(ORDER_USER_NOT_MATCHING)
         }
 

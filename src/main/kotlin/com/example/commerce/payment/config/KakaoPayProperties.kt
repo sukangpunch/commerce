@@ -1,4 +1,4 @@
-package com.example.commerce.pg.config
+package com.example.commerce.payment.config
 
 import org.springframework.boot.context.properties.ConfigurationProperties
 

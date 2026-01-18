@@ -1,4 +1,4 @@
-package com.example.commerce.pg.dto.response
+package com.example.commerce.payment.client
 
 data class KakaoReadyResponse(
     val tid: String,

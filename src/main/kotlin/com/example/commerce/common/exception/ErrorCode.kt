@@ -1,5 +1,6 @@
 package com.example.commerce.common.exception
 
+import org.apache.tomcat.util.http.parser.HttpParser
 import org.springframework.http.HttpStatus
 
 enum class ErrorCode(
@@ -40,6 +41,9 @@ enum class ErrorCode(
 
     // Payment
     ORDER_ALREADY_PAID(HttpStatus.BAD_REQUEST.value(), "이미 결제된 주문입니다."),
+    PAYMENT_USER_MISMATCH(HttpStatus.BAD_REQUEST.value(), "결제건과 유저가 매핑되지 않습니다."),
+    PAYMENT_STATUS_INVALID(HttpStatus.BAD_REQUEST.value(), "결제 상태가 유효하지 않습니다."),
+    PAYMENT_AMOUNT_MISMATCH(HttpStatus.BAD_REQUEST.value(), "결제 금액이 매칭되지 않습니다."),
 
     // PG
     KAKAO_PAY_APPROVE_RESPONSE_EMPTY(HttpStatus.BAD_REQUEST.value(), "카카오페이 승인 응답이 비어있습니다."),
