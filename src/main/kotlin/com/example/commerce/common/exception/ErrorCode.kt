@@ -1,6 +1,5 @@
 package com.example.commerce.common.exception
 
-import org.apache.tomcat.util.http.parser.HttpParser
 import org.springframework.http.HttpStatus
 
 enum class ErrorCode(
@@ -47,9 +46,10 @@ enum class ErrorCode(
 
     // PG
     KAKAO_PAY_APPROVE_RESPONSE_EMPTY(HttpStatus.BAD_REQUEST.value(), "카카오페이 승인 응답이 비어있습니다."),
-    KAKAO_PAY_HTTP_ERROR(HttpStatus.BAD_REQUEST.value(), "카카오페이 와의 HTTP 통신중 에러가 발생하였습니다."),
-    KAKAO_PAY_PAYMENT_CANCEL(HttpStatus.BAD_REQUEST.value(), "카카오 페이 결체가 취소되었습니다."),
-    KAKAO_PAY_PAYMENT_FAIL(HttpStatus.BAD_REQUEST.value(), "카카오 페이 결체가 실패하였습니다."),
+    KAKAO_PAY_HTTP_ERROR(HttpStatus.BAD_REQUEST.value(), "카카오페이와의 HTTP 통신 중 오류가 발생하였습니다."),
+    KAKAO_PAY_PAYMENT_CANCEL(HttpStatus.BAD_REQUEST.value(), "카카오페이 결제가 취소되었습니다."),
+    KAKAO_PAY_PAYMENT_FAIL(HttpStatus.BAD_REQUEST.value(), "카카오페이 결제가 실패하였습니다."),
+    KAKAO_PAY_READY_RESPONSE_EMPTY(HttpStatus.BAD_REQUEST.value(), "카카오페이 준비 응답이 비어있습니다."),
 
     // Database
     DATA_INTEGRITY_VIOLATION(HttpStatus.CONFLICT.value(), "데이터베이스 무결성 제약조건 위반이 발생했습니다."),
