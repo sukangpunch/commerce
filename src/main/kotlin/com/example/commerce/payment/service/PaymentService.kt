@@ -25,7 +25,6 @@ import com.example.commerce.payment.repository.TransactionHistoryRepository
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.RestClientException
@@ -87,16 +86,8 @@ class PaymentService(
                 totalAmount = payment.paidAmount
             )
         } catch (e: HttpClientErrorException) {
-            saveFailureHistoryInNewTransaction(
-                payment.id!!,
-                "HTTP ${e.statusCode}: ${e.responseBodyAsString}"
-            )
             throw CustomException(KAKAO_PAY_PAYMENT_FAIL, "카카오페이 에러: ${e.responseBodyAsString}")
         } catch (e: RestClientException) {
-            saveFailureHistoryInNewTransaction(
-                payment.id!!,
-                "통신 실패: ${e.message}"
-            )
             throw CustomException(KAKAO_PAY_PAYMENT_FAIL, e.message)
         }
 
@@ -133,17 +124,8 @@ class PaymentService(
                 pgToken = pgToken
             )
         } catch (e: HttpClientErrorException) {
-            // 실패 이력을 별도 트랜잭션으로 저장
-            saveFailureHistoryInNewTransaction(
-                payment.id!!,
-                "HTTP ${e.statusCode}: ${e.responseBodyAsString}" //
-            )
             throw CustomException(KAKAO_PAY_PAYMENT_FAIL, "카카오페이 에러: ${e.responseBodyAsString}")  // 상세 정보 포함
         } catch (e: RestClientException) {
-            saveFailureHistoryInNewTransaction(
-                payment.id!!,
-                "통신 실패: ${e.message}"
-            )
             throw CustomException(KAKAO_PAY_PAYMENT_FAIL, e.message)
         }
 
@@ -173,27 +155,30 @@ class PaymentService(
         return PaymentApproveResponse.from(paymentApproveResponse)
     }
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    fun saveFailureHistoryInNewTransaction(paymentId: Long, message: String) {
-        val payment = paymentRepository.findById(paymentId).orElseThrow()
-        payment.fail()
-        saveTransactionHistory(payment, TransactionType.PAYMENT_FAIL, message)
-    }
-
-    private fun saveTransactionHistory(
-        payment: PaymentEntity,
-        type: TransactionType,
-        message: String
+    @Transactional
+    fun fail(
+        orderKey: String,
+        errorCode: String,
+        errorMessage: String
     ) {
+        val order = orderRepository.findByOrderKeyAndState(orderKey, OrderState.CREATED)
+            .orElseThrow { CustomException(ORDER_NOT_FOUND) }
+
+        val payment = paymentRepository.findByOrderId(order.id!!)
+            ?: throw CustomException(PAYMENT_NOT_FOUND)
+
+        // 실패 처리
+        payment.fail()
+
         transactionHistoryRepository.save(
             TransactionHistoryEntity(
-                type = type,
-                userId = payment.userId,
-                orderId = payment.orderId,
+                type = TransactionType.PAYMENT_FAIL,
+                userId = order.userId,
+                orderId = order.id!!,
                 paymentId = payment.id!!,
                 externalPaymentKey = payment.externalPaymentKey ?: "",
-                amount = if (type == TransactionType.PAYMENT) payment.paidAmount else BigDecimal.ZERO,
-                message = message,
+                amount = payment.paidAmount,
+                message = "[$errorCode] $errorMessage",
                 occurredAt = LocalDateTime.now()
             )
         )

@@ -2,12 +2,12 @@ package com.example.commerce.payment.controller
 
 import com.example.commerce.common.exception.CustomException
 import com.example.commerce.common.exception.ErrorCode.KAKAO_PAY_PAYMENT_CANCEL
-import com.example.commerce.common.exception.ErrorCode.KAKAO_PAY_PAYMENT_FAIL
 import com.example.commerce.order.domain.OrderState
 import com.example.commerce.order.service.OrderService
 import com.example.commerce.payment.client.KakaoReadyResponse
 import com.example.commerce.payment.dto.request.CreatePaymentReadyRequest
 import com.example.commerce.payment.dto.request.CreatePaymentRequest
+import com.example.commerce.payment.dto.request.PaymentFailRequest
 import com.example.commerce.payment.dto.request.PaymentSuccessRequest
 import com.example.commerce.payment.dto.response.CreatePaymentResponse
 import com.example.commerce.payment.dto.response.PaymentApproveResponse
@@ -64,13 +64,22 @@ class PaymentController(
         return ResponseEntity.status(status).body(response)
     }
 
+    @PostMapping("/fail")
+    fun failPayment(
+        @RequestBody request: PaymentFailRequest
+    ): ResponseEntity<Unit>{
+        paymentService.fail(
+            orderKey = request.orderKey,
+            errorCode = request.errorCode,
+            errorMessage = request.errorMessage,
+        )
+
+        val status = HttpStatus.OK
+        return ResponseEntity.status(status).build()
+    }
+
     @PostMapping("/cancel")
     fun cancelPayment() {
         throw CustomException(KAKAO_PAY_PAYMENT_CANCEL)
-    }
-
-    @PostMapping("/fail")
-    fun failPayment() {
-        throw CustomException(KAKAO_PAY_PAYMENT_FAIL)
     }
 }

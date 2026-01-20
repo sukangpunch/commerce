@@ -47,8 +47,8 @@ class KakaoPayClient(
             "vat_amount" to vatAmount,
             "tax_free_amount" to "0",
             "approval_url" to "http://localhost:8080/api/v1/kakao-pay/success?orderKey=$orderKey",
-            "fail_url" to "http://localhost:8080/api/v1/kakao-pay/fail",
-            "cancel_url" to "http://localhost:8080/api/v1/kakao-pay/cancel"
+            "fail_url" to "http://localhost:8080/api/v1/kakao-pay/fail?orderKey=$orderKey",
+            "cancel_url" to "http://localhost:8080/api/v1/kakao-pay/cancel?orderKey=$orderKey"
         )
 
         val requestEntity = HttpEntity(params, getHeader())
