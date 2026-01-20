@@ -1,9 +1,9 @@
 package com.example.commerce.product.repository
 
-import com.example.commerce.product.domain.Product
+import com.example.commerce.product.domain.ProductEntity
 import org.springframework.data.jpa.repository.JpaRepository
 
-interface ProductRepository : JpaRepository<Product, Long> {
+interface ProductRepository : JpaRepository<ProductEntity, Long> {
 
-    fun findByIdIn(ids: Collection<Long>): List<Product>
+    fun findByIdIn(ids: Collection<Long>): List<ProductEntity>
 }

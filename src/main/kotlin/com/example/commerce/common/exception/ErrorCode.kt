@@ -14,6 +14,7 @@ enum class ErrorCode(
     CART_ITEM_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "카트 아이템을 찾을 수 없습니다."),
     ORDER_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "주문을 찾을 수 없습니다."),
     ORDER_PRODUCT_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "주문의 상품을 찾을 수 없습니다."),
+    PAYMENT_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "결제를 찾을 수 없습니다."),
 
     // User
     PASSWORD_MISMATCH(HttpStatus.BAD_REQUEST.value(), "비밀번호가 일치하지 않습니다."),
@@ -29,10 +30,26 @@ enum class ErrorCode(
     PRODUCT_CATEGORY_NOT_MATCHING(HttpStatus.BAD_REQUEST.value(), "상품에 카테고리가 매핑되어 있지 않습니다."),
     CATEGORY_NAME_DUPLICATED(HttpStatus.BAD_REQUEST.value(), "이미 존재하는 카테고리 이름입니다"),
 
+    // Cart
+    ORDER_PRODUCT_CART_PRODUCT_NOT_MATCHING(HttpStatus.BAD_REQUEST.value(), "주문 상품과, 장바구니 상품이 매칭 되지 않습니다."),
+
     // Order
     ORDER_PRODUCT_QUANTITY_INVALID(HttpStatus.BAD_REQUEST.value(), "주문 시 상품 수량은 최소 1개 이상이어야 합니다."),
     PRODUCT_MISMATCH_IN_ORDER(HttpStatus.BAD_REQUEST.value(), "주문의 상품과 조회한 상품이 매칭되지 않습니다."),
     ORDER_USER_NOT_MATCHING(HttpStatus.BAD_REQUEST.value(), "주문을 조회할 권한이 존재하지 않습니다."),
+
+    // Payment
+    ORDER_ALREADY_PAID(HttpStatus.BAD_REQUEST.value(), "이미 결제된 주문입니다."),
+    PAYMENT_USER_MISMATCH(HttpStatus.BAD_REQUEST.value(), "결제건과 유저가 매핑되지 않습니다."),
+    PAYMENT_STATUS_INVALID(HttpStatus.BAD_REQUEST.value(), "결제 상태가 유효하지 않습니다."),
+    PAYMENT_AMOUNT_MISMATCH(HttpStatus.BAD_REQUEST.value(), "결제 금액이 매칭되지 않습니다."),
+
+    // PG
+    KAKAO_PAY_APPROVE_RESPONSE_EMPTY(HttpStatus.BAD_REQUEST.value(), "카카오페이 승인 응답이 비어있습니다."),
+    KAKAO_PAY_HTTP_ERROR(HttpStatus.BAD_REQUEST.value(), "카카오페이와의 HTTP 통신 중 오류가 발생하였습니다."),
+    KAKAO_PAY_PAYMENT_CANCEL(HttpStatus.BAD_REQUEST.value(), "카카오페이 결제가 취소되었습니다."),
+    KAKAO_PAY_PAYMENT_FAIL(HttpStatus.BAD_REQUEST.value(), "카카오페이 결제가 실패하였습니다."),
+    KAKAO_PAY_READY_RESPONSE_EMPTY(HttpStatus.BAD_REQUEST.value(), "카카오페이 준비 응답이 비어있습니다."),
 
     // Database
     DATA_INTEGRITY_VIOLATION(HttpStatus.CONFLICT.value(), "데이터베이스 무결성 제약조건 위반이 발생했습니다."),

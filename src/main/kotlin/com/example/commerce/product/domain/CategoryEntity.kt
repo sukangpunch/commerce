@@ -21,7 +21,7 @@ import jakarta.persistence.UniqueConstraint
         )
     ]
 )
-class Category(
+class CategoryEntity(
     @Column(name = "name", nullable = false)
     var name: String,
 
