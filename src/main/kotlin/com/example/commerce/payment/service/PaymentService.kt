@@ -1,7 +1,6 @@
 package com.example.commerce.payment.service
 
 import com.example.commerce.common.exception.CustomException
-import com.example.commerce.common.exception.ErrorCode
 import com.example.commerce.common.exception.ErrorCode.KAKAO_PAY_PAYMENT_FAIL
 import com.example.commerce.common.exception.ErrorCode.ORDER_ALREADY_PAID
 import com.example.commerce.common.exception.ErrorCode.ORDER_NOT_FOUND
@@ -26,7 +25,10 @@ import com.example.commerce.payment.repository.TransactionHistoryRepository
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
+import org.springframework.web.client.HttpClientErrorException
+import org.springframework.web.client.RestClientException
 import java.math.BigDecimal
 import java.time.LocalDateTime
 
@@ -79,48 +81,28 @@ class PaymentService(
             kakaoPayClient.ready(
                 orderId = payment.orderId,
                 orderName = order.name,
+                orderKey = order.key,
                 userId = payment.userId,
                 quantity = 0,
                 totalAmount = payment.paidAmount
             )
-        } catch (e: Exception) {
-            updatePaymentState(payment.id!!, PaymentState.FAIL, "준비 실패: ${e.message}")
-            throw CustomException(KAKAO_PAY_PAYMENT_FAIL)
+        } catch (e: HttpClientErrorException) {
+            saveFailureHistoryInNewTransaction(
+                payment.id!!,
+                "HTTP ${e.statusCode}: ${e.responseBodyAsString}"
+            )
+            throw CustomException(KAKAO_PAY_PAYMENT_FAIL, "카카오페이 에러: ${e.responseBodyAsString}")
+        } catch (e: RestClientException) {
+            saveFailureHistoryInNewTransaction(
+                payment.id!!,
+                "통신 실패: ${e.message}"
+            )
+            throw CustomException(KAKAO_PAY_PAYMENT_FAIL, e.message)
         }
 
         payment.ready(readyResponse.tid)
 
         return readyResponse
-    }
-
-    @Transactional
-    fun updatePaymentState(paymentId: Long, state: PaymentState, reason: String) {
-        val payment = paymentRepository.findById(paymentId)
-            .orElseThrow { CustomException(PAYMENT_NOT_FOUND) }
-
-        payment.fail()
-
-        // 이력 저장
-        saveTransactionHistory(payment, TransactionType.PAYMENT_FAIL, reason)
-    }
-
-    private fun saveTransactionHistory(
-        payment: PaymentEntity,
-        type: TransactionType,
-        message: String
-    ) {
-        transactionHistoryRepository.save(
-            TransactionHistoryEntity(
-                type = type,
-                userId = payment.userId,
-                orderId = payment.orderId,
-                paymentId = payment.id!!,
-                externalPaymentKey = payment.externalPaymentKey ?: "",
-                amount = if (type == TransactionType.PAYMENT) payment.paidAmount else BigDecimal.ZERO,
-                message = message,
-                occurredAt = LocalDateTime.now()
-            )
-        )
     }
 
     // 결제 승인
@@ -148,10 +130,21 @@ class PaymentService(
                 tid = payment.externalPaymentKey!!,
                 orderId = payment.orderId,
                 userId = payment.userId,
-                pgToken = pgToken,
-                )
-        }catch (e: Exception){
-            throw CustomException(ErrorCode.KAKAO_PAY_HTTP_ERROR)
+                pgToken = pgToken
+            )
+        } catch (e: HttpClientErrorException) {
+            // 실패 이력을 별도 트랜잭션으로 저장
+            saveFailureHistoryInNewTransaction(
+                payment.id!!,
+                "HTTP ${e.statusCode}: ${e.responseBodyAsString}" //
+            )
+            throw CustomException(KAKAO_PAY_PAYMENT_FAIL, "카카오페이 에러: ${e.responseBodyAsString}")  // 상세 정보 포함
+        } catch (e: RestClientException) {
+            saveFailureHistoryInNewTransaction(
+                payment.id!!,
+                "통신 실패: ${e.message}"
+            )
+            throw CustomException(KAKAO_PAY_PAYMENT_FAIL, e.message)
         }
 
         //승인 성공 시에만 상태 변경
@@ -177,7 +170,32 @@ class PaymentService(
             ),
         )
 
-        log.info("api 호출 후 PaymentRESPONSE 생성")
-        return  PaymentApproveResponse.from(paymentApproveResponse)
+        return PaymentApproveResponse.from(paymentApproveResponse)
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    fun saveFailureHistoryInNewTransaction(paymentId: Long, message: String) {
+        val payment = paymentRepository.findById(paymentId).orElseThrow()
+        payment.fail()
+        saveTransactionHistory(payment, TransactionType.PAYMENT_FAIL, message)
+    }
+
+    private fun saveTransactionHistory(
+        payment: PaymentEntity,
+        type: TransactionType,
+        message: String
+    ) {
+        transactionHistoryRepository.save(
+            TransactionHistoryEntity(
+                type = type,
+                userId = payment.userId,
+                orderId = payment.orderId,
+                paymentId = payment.id!!,
+                externalPaymentKey = payment.externalPaymentKey ?: "",
+                amount = if (type == TransactionType.PAYMENT) payment.paidAmount else BigDecimal.ZERO,
+                message = message,
+                occurredAt = LocalDateTime.now()
+            )
+        )
     }
 }
