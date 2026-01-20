@@ -60,7 +60,7 @@ class KakaoPayClient(
                 KakaoReadyResponse::class.java // 응답을 매핑할 클래스
             ) ?: throw CustomException(KAKAO_PAY_READY_RESPONSE_EMPTY)
         } catch (e: HttpClientErrorException) {
-            log.error("카카오페이 API 에러: status=${e.statusCode}, body=${e.responseBodyAsString}")
+            log.error("카카오페이 API 에러: status=${e.statusCode}, body=${e.responseBodyAsString}", e)
             throw e
         } catch (e: RestClientException) {
             log.error("카카오페이 통신 실패", e)
@@ -92,7 +92,7 @@ class KakaoPayClient(
             ) ?: throw CustomException(KAKAO_PAY_APPROVE_RESPONSE_EMPTY)
         } catch (e: HttpClientErrorException) {
             // 카카오페이 에러 응답 파싱
-            log.error("카카오페이 API 에러: status=${e.statusCode}, body=${e.responseBodyAsString}")
+            log.error("카카오페이 API 에러: status=${e.statusCode}, body=${e.responseBodyAsString}", e)
             throw e
         } catch (e: RestClientException) {
             log.error("카카오페이 통신 실패", e)

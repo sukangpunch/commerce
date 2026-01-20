@@ -39,8 +39,6 @@ class PaymentService(
     private val kakaoPayClient: KakaoPayClient
 ) {
 
-    private val log: Logger = LoggerFactory.getLogger(javaClass)
-
     // 결제 준비
     // 결제 준비 이후, 트랜잭션 밖에서 PG 사 결제 준비 API 호출
     // 클라이언트에 필요한 정보만 반환
@@ -48,11 +46,18 @@ class PaymentService(
     fun createPayment(
         order: Order
     ): CreatePaymentResponse {
-        if (paymentRepository.findByOrderId(order.id)?.state == PaymentState.SUCCESS) {
-            throw CustomException(ORDER_ALREADY_PAID)
+        val payment = paymentRepository.findByOrderId(order.id)
+
+        if(payment != null){
+            if (payment.state == PaymentState.SUCCESS) {
+                throw CustomException(ORDER_ALREADY_PAID)
+            }
+            if(payment.state == PaymentState.READY){
+                return CreatePaymentResponse.of(payment, order.name)
+            }
         }
 
-        val payment = PaymentEntity(
+        val newPayment = PaymentEntity(
             userId = order.userId,
             orderId = order.id,
             originAmount = order.totalPrice,
@@ -60,9 +65,9 @@ class PaymentService(
             state = PaymentState.READY
         )
 
-        paymentRepository.save(payment)
+        paymentRepository.save(newPayment)
 
-        return CreatePaymentResponse.of(payment, order.name)
+        return CreatePaymentResponse.of(newPayment, order.name)
     }
 
     @Transactional
